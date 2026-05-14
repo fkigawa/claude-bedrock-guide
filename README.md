@@ -1,6 +1,6 @@
 # Connect Claude Code to Anthropic Models via AWS Bedrock
 
-A step-by-step guide for **non-technical users** to run Claude Code (the terminal version of Claude) using Anthropic models hosted on AWS Bedrock instead of going directly through Anthropic's API.
+A step-by-step guide for **non-technical users who already have an AWS account** to run Claude Code (the terminal version of Claude) using Anthropic models hosted on AWS Bedrock instead of going directly through Anthropic's API.
 
 ---
 
@@ -16,44 +16,28 @@ If none of those apply, signing up directly at [console.anthropic.com](https://c
 
 ## What you need before starting
 
-1. A computer (Mac, Windows, or Linux).
-2. An email address you can use to register an AWS account.
-3. A credit card (AWS requires one, even for the free tier).
-4. About **30–45 minutes** the first time through.
+1. An existing AWS account you can sign into.
+2. Permission in that account to enable Bedrock models and create an IAM user. If you're not the account owner, you may need to ask your AWS admin to do **Step 2** and **Step 3** for you.
+3. A computer (Mac, Windows, or Linux).
+4. About **15–20 minutes**.
 
 You do **not** need to know how to code.
 
 ---
 
-## Step 1 — Create an AWS account
+## Step 1 — Sign in and pick a region that supports Claude
 
-1. Go to **https://aws.amazon.com**.
-2. Click **"Create an AWS Account"** (top right).
-3. Enter your email, choose an account name (e.g. `yourname-personal`), and follow the prompts.
-4. Add your payment method when asked.
-5. Choose the **Basic Support — Free** plan at the end.
-
-When you finish, you'll land in the **AWS Management Console**. That's your home base.
-
----
-
-## Step 2 — Pick a region that supports Claude
-
-Bedrock and the Claude models are not available in every AWS region. Easy choices:
-
-- **`us-east-1`** (N. Virginia) — widest model availability
-- **`us-west-2`** (Oregon) — also good
-
-**How to set your region:**
-
-1. Look at the top-right of the AWS Console — there's a region dropdown (it might say "Ohio" or similar by default).
-2. Click it and choose **US East (N. Virginia) us-east-1**.
+1. Go to **https://console.aws.amazon.com** and sign in.
+2. Bedrock and the Claude models are not available in every AWS region. Easy choices:
+   - **`us-east-1`** (N. Virginia) — widest model availability
+   - **`us-west-2`** (Oregon) — also good
+3. Look at the top-right of the AWS Console — there's a region dropdown. Click it and choose **US East (N. Virginia) us-east-1**.
 
 Write down the region code (`us-east-1`). You'll need it later.
 
 ---
 
-## Step 3 — Request access to the Claude models in Bedrock
+## Step 2 — Request access to the Claude models in Bedrock
 
 AWS doesn't enable model access automatically — you have to opt in to each model.
 
@@ -67,13 +51,13 @@ AWS doesn't enable model access automatically — you have to opt in to each mod
 5. Click **Next**, fill in the short use-case form (one sentence is fine, e.g. *"Internal developer tooling for our team"*), and submit.
 6. Access for Anthropic models is usually granted within a few minutes. Refresh the page until the status shows **"Access granted"** (green).
 
-> If a model says **"Available to request"** and you don't see a checkbox, your AWS account may be brand new — wait an hour and try again, or open a Support case.
+> If a model says **"Available to request"** and you don't see a checkbox, your account may need higher permissions — ask your AWS admin.
 
 ---
 
-## Step 4 — Create an access key (so your terminal can talk to AWS)
+## Step 3 — Create an access key (so your terminal can talk to AWS)
 
-Your terminal needs credentials to call Bedrock on your behalf. The cleanest way for a single-user setup:
+If you already have AWS credentials configured on your machine (you can check by running `aws sts get-caller-identity` in a terminal — if it returns your account info, **skip to Step 5**), you can reuse those as long as the user has Bedrock access. Otherwise:
 
 1. In the AWS Console search bar, type **"IAM"** and click the result.
 2. In the left sidebar, click **"Users"**, then **"Create user"**.
@@ -92,9 +76,9 @@ Your terminal needs credentials to call Bedrock on your behalf. The cleanest way
 
 ---
 
-## Step 5 — Install the AWS CLI on your computer
+## Step 4 — Install the AWS CLI on your computer
 
-This is the tool that holds your credentials and lets Claude Code authenticate.
+Skip this step if `aws --version` already prints a version number in your terminal.
 
 ### Mac
 1. Open the **Terminal** app (press `Cmd + Space`, type "Terminal", hit Enter).
@@ -125,9 +109,9 @@ You should see something like `aws-cli/2.x.x`.
 
 ---
 
-## Step 6 — Save your AWS credentials on your computer
+## Step 5 — Save your AWS credentials on your computer
 
-In the same terminal window, run:
+In a terminal, run:
 
 ```bash
 aws configure
@@ -137,9 +121,9 @@ It'll ask you four things:
 
 | Prompt | What to enter |
 |---|---|
-| AWS Access Key ID | Paste the **Access key ID** from Step 4 |
-| AWS Secret Access Key | Paste the **Secret access key** from Step 4 |
-| Default region name | `us-east-1` (or whatever you chose in Step 2) |
+| AWS Access Key ID | Paste the **Access key ID** from Step 3 |
+| AWS Secret Access Key | Paste the **Secret access key** from Step 3 |
+| Default region name | `us-east-1` (or whatever you chose in Step 1) |
 | Default output format | `json` |
 
 Test that it worked:
@@ -148,22 +132,20 @@ aws sts get-caller-identity
 ```
 You should see your AWS account number and the user name `claude-code-user`. If you do, credentials are wired up correctly.
 
+> Already have other AWS profiles on this machine? You can keep them separate by running `aws configure --profile claude-bedrock` instead, then later setting `export AWS_PROFILE=claude-bedrock` before launching Claude.
+
 ---
 
-## Step 7 — Install Claude Code
+## Step 6 — Install Claude Code
 
 Claude Code needs **Node.js** (a free runtime) installed first.
 
 ### Install Node.js
+Skip if `node --version` already prints `v20.x.x` or higher.
+
 - **Mac:** Go to **https://nodejs.org**, click the green LTS button, run the installer.
 - **Windows:** Same — **https://nodejs.org**, LTS, run the installer.
 - **Linux:** Use your package manager, e.g. `sudo apt install nodejs npm`.
-
-Verify:
-```bash
-node --version
-```
-You should see `v20.x.x` or higher.
 
 ### Install Claude Code itself
 In your terminal:
@@ -178,7 +160,7 @@ claude --version
 
 ---
 
-## Step 8 — Tell Claude Code to use Bedrock
+## Step 7 — Tell Claude Code to use Bedrock
 
 Claude Code talks to Anthropic's API by default. Two environment variables flip it over to Bedrock:
 
@@ -210,7 +192,7 @@ Then **close and reopen PowerShell** for the changes to take effect.
 
 ---
 
-## Step 9 — Run Claude Code
+## Step 8 — Run Claude Code
 
 In your terminal, navigate to any folder you want to work in:
 ```bash
@@ -234,10 +216,10 @@ If you see Claude respond, **you're done.** 🎉
 ## Troubleshooting
 
 ### "Could not load credentials from any providers"
-Your AWS CLI isn't configured. Re-run `aws configure` and double-check Step 6.
+Your AWS CLI isn't configured. Re-run `aws configure` and double-check Step 5.
 
 ### "AccessDeniedException" or "You don't have access to the model"
-You haven't enabled the specific Claude model in Bedrock yet. Go back to **Step 3** and make sure the model status is **"Access granted"**.
+You haven't enabled the specific Claude model in Bedrock yet. Go back to **Step 2** and make sure the model status is **"Access granted"**. If you're using a different AWS profile, also confirm that profile's user has the `AmazonBedrockFullAccess` policy.
 
 ### "Region not supported"
 Bedrock isn't enabled in the region you set. Change `AWS_REGION` to `us-east-1` or `us-west-2`.
@@ -265,8 +247,7 @@ Bedrock charges per million input/output tokens, billed to your AWS account. Pri
 
 ## What you've accomplished
 
-- ✅ AWS account created
-- ✅ Claude models enabled in Bedrock
+- ✅ Claude models enabled in Bedrock under your AWS account
 - ✅ AWS credentials saved on your computer
 - ✅ Claude Code installed
 - ✅ Claude Code talking to Anthropic models via your own AWS account
