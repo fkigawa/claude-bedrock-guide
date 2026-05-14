@@ -12,21 +12,20 @@ Write down the region code (`us-east-1`). You'll need it later.
 
 ---
 
-## Step 2 — Request access to the Claude models in Bedrock
+## Step 2 — Submit the one-time Anthropic use-case form
 
-AWS doesn't enable model access automatically — you have to opt in to each model.
+Bedrock auto-subscribes you to most foundation models the first time you call them. Anthropic models are the exception: AWS requires a **one-time use-case form** per AWS account (or per Organization root) before any Claude model will respond. Once submitted, access is granted immediately and covers all current and future Anthropic models in commercial regions.
+
+If you've already done this for this account, **skip to Step 3**.
 
 1. In the AWS Console search bar at the top, type **"Bedrock"** and click the result.
-2. In the left sidebar, click **"Model access"** (near the bottom).
-3. Click the orange **"Modify model access"** (or "Manage model access") button.
-4. Find **Anthropic** in the provider list. Check the boxes for the Claude models you want, for example:
-   - **Claude Opus 4.7**
-   - **Claude Sonnet 4.6**
-   - **Claude Haiku 4.5**
-5. Click **Next**, fill in the short use-case form (one sentence is fine, e.g. *"Internal developer tooling for our team"*), and submit.
-6. Access for Anthropic models is usually granted within a few minutes. Refresh the page until the status shows **"Access granted"** (green).
+2. In the left sidebar (under **Bedrock configurations**), click **"Model catalog"**.
+3. Filter the provider list to **Anthropic** and click any Claude model.
+4. Click **"Available to request"** (or the **"Request access"** prompt). AWS will pop up the use-case form.
+5. Fill it in — one or two sentences is fine, e.g. *"Internal developer tooling for our team."* If you're an individual without a company website, a GitHub profile or personal site URL works.
+6. Submit. Access is granted immediately and applies across every Anthropic model in the account.
 
-> If a model says **"Available to request"** and you don't see a checkbox, your account may need higher permissions — ask your AWS admin.
+> If you ever see an `AccessDeniedException` mentioning a "first-time use case" requirement when running Claude later, that means this step hasn't been completed — come back here.
 
 ---
 
