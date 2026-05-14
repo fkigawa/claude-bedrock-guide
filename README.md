@@ -1,30 +1,5 @@
 # Connect Claude Code to Anthropic Models via AWS Bedrock
 
-A step-by-step guide for **non-technical users who already have an AWS account** to run Claude Code (the terminal version of Claude) using Anthropic models hosted on AWS Bedrock instead of going directly through Anthropic's API.
-
----
-
-## Why would you do this?
-
-- **Your company already uses AWS.** Billing, security review, and data governance run through one vendor instead of two.
-- **Data residency.** Your prompts and responses stay inside your own AWS account and region.
-- **You have AWS credits.** Bedrock usage draws from your AWS spend, not a separate Anthropic bill.
-
-If none of those apply, signing up directly at [console.anthropic.com](https://console.anthropic.com) is simpler.
-
----
-
-## What you need before starting
-
-1. An existing AWS account you can sign into.
-2. Permission in that account to enable Bedrock models and create an IAM user. If you're not the account owner, you may need to ask your AWS admin to do **Step 2** and **Step 3** for you.
-3. A computer (Mac, Windows, or Linux).
-4. About **15–20 minutes**.
-
-You do **not** need to know how to code.
-
----
-
 ## Step 1 — Sign in and pick a region that supports Claude
 
 1. Go to **https://console.aws.amazon.com** and sign in.
